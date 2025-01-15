@@ -142,9 +142,9 @@ class ComposerStaticInite383454822bc00af63c25add29632241
         'vpcoSearchVideosTableGUI' => __DIR__ . '/../..' . '/classes/Table/class.vpcoSearchVideosTableGUI.php',
     );
 
-    public static function getInitializer(ClassLoader $loader)
+    public static function getInitializer(ClassLoader $loader): \Closure
     {
-        return \Closure::bind(function () use ($loader) {
+        return \Closure::bind(function () use ($loader): void {
             $loader->prefixLengthsPsr4 = ComposerStaticInite383454822bc00af63c25add29632241::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInite383454822bc00af63c25add29632241::$prefixDirsPsr4;
             $loader->classMap = ComposerStaticInite383454822bc00af63c25add29632241::$classMap;

@@ -50,32 +50,31 @@ class ClassLoader
      * @var array[]
      * @psalm-var array<string, array<string, int>>
      */
-    private $prefixLengthsPsr4 = array();
+    private array $prefixLengthsPsr4 = array();
     /**
      * @var array[]
      * @psalm-var array<string, array<int, string>>
      */
-    private $prefixDirsPsr4 = array();
+    private array $prefixDirsPsr4 = array();
     /**
      * @var array[]
      * @psalm-var array<string, string>
      */
-    private $fallbackDirsPsr4 = array();
+    private array $fallbackDirsPsr4 = array();
 
     // PSR-0
     /**
      * @var array[]
      * @psalm-var array<string, array<string, string[]>>
      */
-    private $prefixesPsr0 = array();
+    private array $prefixesPsr0 = array();
     /**
      * @var array[]
      * @psalm-var array<string, string>
      */
-    private $fallbackDirsPsr0 = array();
+    private array $fallbackDirsPsr0 = array();
 
-    /** @var bool */
-    private $useIncludePath = false;
+    private bool $useIncludePath = false;
 
     /**
      * @var string[]
@@ -83,17 +82,15 @@ class ClassLoader
      */
     private $classMap = array();
 
-    /** @var bool */
-    private $classMapAuthoritative = false;
+    private bool $classMapAuthoritative = false;
 
     /**
      * @var bool[]
      * @psalm-var array<string, bool>
      */
-    private $missingClasses = array();
+    private array $missingClasses = array();
 
-    /** @var ?string */
-    private $apcuPrefix;
+    private ?string $apcuPrefix = null;
 
     /**
      * @var self[]
@@ -113,7 +110,7 @@ class ClassLoader
      */
     public function getPrefixes()
     {
-        if (!empty($this->prefixesPsr0)) {
+        if ($this->prefixesPsr0 !== []) {
             return call_user_func_array('array_merge', array_values($this->prefixesPsr0));
         }
 
@@ -159,16 +156,10 @@ class ClassLoader
     /**
      * @param string[] $classMap Class to filename map
      * @psalm-param array<string, string> $classMap
-     *
-     * @return void
      */
-    public function addClassMap(array $classMap)
+    public function addClassMap(array $classMap): void
     {
-        if ($this->classMap) {
-            $this->classMap = array_merge($this->classMap, $classMap);
-        } else {
-            $this->classMap = $classMap;
-        }
+        $this->classMap = $this->classMap ? array_merge($this->classMap, $classMap) : $classMap;
     }
 
     /**
@@ -178,12 +169,10 @@ class ClassLoader
      * @param string          $prefix  The prefix
      * @param string[]|string $paths   The PSR-0 root directories
      * @param bool            $prepend Whether to prepend the directories
-     *
-     * @return void
      */
-    public function add($prefix, $paths, $prepend = false)
+    public function add($prefix, $paths, $prepend = false): void
     {
-        if (!$prefix) {
+        if ($prefix === '' || $prefix === '0') {
             if ($prepend) {
                 $this->fallbackDirsPsr0 = array_merge(
                     (array) $paths,
@@ -274,10 +263,8 @@ class ClassLoader
      *
      * @param string          $prefix The prefix
      * @param string[]|string $paths  The PSR-0 base directories
-     *
-     * @return void
      */
-    public function set($prefix, $paths)
+    public function set($prefix, $paths): void
     {
         if (!$prefix) {
             $this->fallbackDirsPsr0 = (array) $paths;
@@ -313,12 +300,8 @@ class ClassLoader
 
     /**
      * Turns on searching the include path for class files.
-     *
-     * @param bool $useIncludePath
-     *
-     * @return void
      */
-    public function setUseIncludePath($useIncludePath)
+    public function setUseIncludePath(bool $useIncludePath): void
     {
         $this->useIncludePath = $useIncludePath;
     }
@@ -337,12 +320,8 @@ class ClassLoader
     /**
      * Turns off searching the prefix and fallback directories for classes
      * that have not been registered with the class map.
-     *
-     * @param bool $classMapAuthoritative
-     *
-     * @return void
      */
-    public function setClassMapAuthoritative($classMapAuthoritative)
+    public function setClassMapAuthoritative(bool $classMapAuthoritative): void
     {
         $this->classMapAuthoritative = $classMapAuthoritative;
     }
@@ -361,10 +340,8 @@ class ClassLoader
      * APCu prefix to use to cache found/not-found classes, if the extension is enabled.
      *
      * @param string|null $apcuPrefix
-     *
-     * @return void
      */
-    public function setApcuPrefix($apcuPrefix)
+    public function setApcuPrefix($apcuPrefix): void
     {
         $this->apcuPrefix = function_exists('apcu_fetch') && filter_var(ini_get('apc.enabled'), FILTER_VALIDATE_BOOLEAN) ? $apcuPrefix : null;
     }
@@ -383,12 +360,12 @@ class ClassLoader
      * Registers this instance as an autoloader.
      *
      * @param bool $prepend Whether to prepend the autoloader or not
-     *
-     * @return void
      */
-    public function register($prepend = false)
+    public function register($prepend = false): void
     {
-        spl_autoload_register(array($this, 'loadClass'), true, $prepend);
+        spl_autoload_register(function (string $class) : ?bool {
+            return $this->loadClass($class);
+        }, true, $prepend);
 
         if (null === $this->vendorDir) {
             return;
@@ -404,12 +381,12 @@ class ClassLoader
 
     /**
      * Unregisters this instance as an autoloader.
-     *
-     * @return void
      */
-    public function unregister()
+    public function unregister(): void
     {
-        spl_autoload_unregister(array($this, 'loadClass'));
+        spl_autoload_unregister(function (string $class) : ?bool {
+            return $this->loadClass($class);
+        });
 
         if (null !== $this->vendorDir) {
             unset(self::$registeredLoaders[$this->vendorDir]);
@@ -422,7 +399,7 @@ class ClassLoader
      * @param  string    $class The name of the class
      * @return true|null True if loaded, null otherwise
      */
-    public function loadClass($class)
+    public function loadClass($class): ?bool
     {
         if ($file = $this->findFile($class)) {
             includeFile($file);
@@ -446,7 +423,10 @@ class ClassLoader
         if (isset($this->classMap[$class])) {
             return $this->classMap[$class];
         }
-        if ($this->classMapAuthoritative || isset($this->missingClasses[$class])) {
+        if ($this->classMapAuthoritative) {
+            return false;
+        }
+        if (isset($this->missingClasses[$class])) {
             return false;
         }
         if (null !== $this->apcuPrefix) {
@@ -487,10 +467,9 @@ class ClassLoader
 
     /**
      * @param  string       $class
-     * @param  string       $ext
      * @return string|false
      */
-    private function findFileWithExtension($class, $ext)
+    private function findFileWithExtension($class, string $ext)
     {
         // PSR-4 lookup
         $logicalPathPsr4 = strtr($class, '\\', DIRECTORY_SEPARATOR) . $ext;
@@ -547,13 +526,14 @@ class ClassLoader
                 return $file;
             }
         }
-
         // PSR-0 include paths.
-        if ($this->useIncludePath && $file = stream_resolve_include_path($logicalPathPsr0)) {
-            return $file;
+        if (!$this->useIncludePath) {
+            return false;
         }
-
-        return false;
+        if (!($file = stream_resolve_include_path($logicalPathPsr0))) {
+            return false;
+        }
+        return $file;
     }
 }
 
@@ -566,7 +546,7 @@ class ClassLoader
  * @return void
  * @private
  */
-function includeFile($file)
+function includeFile($file): void
 {
     include $file;
 }

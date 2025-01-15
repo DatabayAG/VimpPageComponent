@@ -9,15 +9,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
  *
  * @author Theodor Truffer <tt@studer-raimann.ch>
  */
-class ilVimpPageComponentPlugin extends ilPageComponentPlugin {
-
-    const PLUGIN_NAME = 'VimpPageComponent';
-    const TABLE_NAME = "copg_pgcp_vpco_config";
-    const CTYPE = 'Services';
-    const CNAME = 'COPage';
-    const SLOT_ID = 'pgcp';
-    const PLUGIN_ID = 'vpco';
-    private static $instance;
+class ilVimpPageComponentPlugin extends ilPageComponentPlugin
+{
+    public const PLUGIN_NAME = 'VimpPageComponent';
+    public const TABLE_NAME = "copg_pgcp_vpco_config";
+    public const CTYPE = 'Services';
+    public const CNAME = 'COPage';
+    public const SLOT_ID = 'pgcp';
+    public const PLUGIN_ID = 'vpco';
+    private static ?\ilVimpPageComponentPlugin $instance = null;
 
     public function __construct()
     {
@@ -28,10 +28,8 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin {
 
     /**
      * Get plugin name
-     *
-     * @return string
      */
-    function getPluginName(): string
+    public function getPluginName(): string
     {
         return self::PLUGIN_NAME;
     }
@@ -39,10 +37,8 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin {
 
     /**
      * Get plugin name
-     *
-     * @return string
      */
-    function isValidParentType($a_parent_type): bool
+    public function isValidParentType($a_parent_type): bool
     {
         return true;
     }
@@ -56,7 +52,7 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin {
         return self::$instance;
     }
 
-    public static function setValue($setting, $value, $type)
+    public static function setValue($setting, $value, $type): void
     {
         global $DIC;
         $db = $DIC->database();
@@ -72,16 +68,14 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin {
     {
         global $DIC;
         $db = $DIC->database();
-        $value = null;
         $set = $db->query(
             "SELECT value FROM " . ilVimpPageComponentPlugin::TABLE_NAME .
             " WHERE name = " . $db->quote($setting, "text")
         );
 
         if ($rec = $set->fetchRow()) {
-            $value = $rec['value'];
+            return $rec['value'];
         }
-        return $value;
+        return null;
     }
-} 
-
+}

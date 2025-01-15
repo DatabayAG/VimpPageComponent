@@ -32,16 +32,13 @@ class InstalledVersions
      */
     private static $installed;
 
-    /**
-     * @var bool|null
-     */
-    private static $canGetVendors;
+    private static ?bool $canGetVendors = null;
 
     /**
      * @var array[]
      * @psalm-var array<string, array{root: array{name: string, pretty_version: string, version: string, reference: string|null, type: string, install_path: string, aliases: string[], dev: bool}, versions: array<string, array{pretty_version?: string, version?: string, reference?: string|null, type?: string, install_path?: string, aliases?: string[], dev_requirement: bool, replaced?: string[], provided?: string[]}>}>
      */
-    private static $installedByVendor = array();
+    private static array $installedByVendor = array();
 
     /**
      * Returns a list of all package names which are present, either by being installed, replaced or provided
@@ -70,15 +67,19 @@ class InstalledVersions
      * @return string[]
      * @psalm-return list<string>
      */
-    public static function getInstalledPackagesByType($type)
+    public static function getInstalledPackagesByType($type): array
     {
         $packagesByType = array();
 
         foreach (self::getInstalled() as $installed) {
             foreach ($installed['versions'] as $name => $package) {
-                if (isset($package['type']) && $package['type'] === $type) {
-                    $packagesByType[] = $name;
+                if (!isset($package['type'])) {
+                    continue;
                 }
+                if ($package['type'] !== $type) {
+                    continue;
+                }
+                $packagesByType[] = $name;
             }
         }
 
@@ -92,9 +93,8 @@ class InstalledVersions
      *
      * @param  string $packageName
      * @param  bool   $includeDevRequirements
-     * @return bool
      */
-    public static function isInstalled($packageName, $includeDevRequirements = true)
+    public static function isInstalled($packageName, $includeDevRequirements = true): bool
     {
         foreach (self::getInstalled() as $installed) {
             if (isset($installed['versions'][$packageName])) {
@@ -114,10 +114,10 @@ class InstalledVersions
      *
      * @param  VersionParser $parser      Install composer/semver to have access to this class and functionality
      * @param  string        $packageName
-     * @param  string|null   $constraint  A version constraint to check for, if you pass one you have to make sure composer/semver is required by your package
+     * @param string $constraint A version constraint to check for, if you pass one you have to make sure composer/semver is required by your package
      * @return bool
      */
-    public static function satisfies(VersionParser $parser, $packageName, $constraint)
+    public static function satisfies(VersionParser $parser, $packageName, \Composer\Semver\Constraint\ConstraintInterface $constraint)
     {
         $constraint = $parser->parseConstraints($constraint);
         $provided = $parser->parseConstraints(self::getVersionRanges($packageName));
@@ -134,7 +134,7 @@ class InstalledVersions
      * @param  string $packageName
      * @return string Version constraint usable with composer/semver
      */
-    public static function getVersionRanges($packageName)
+    public static function getVersionRanges($packageName): string
     {
         foreach (self::getInstalled() as $installed) {
             if (!isset($installed['versions'][$packageName])) {
@@ -266,11 +266,7 @@ class InstalledVersions
         if (null === self::$installed) {
             // only require the installed.php file if this file is loaded from its dumped location,
             // and not from its source location in the composer/composer package, see https://github.com/composer/composer/issues/9937
-            if (substr(__DIR__, -8, 1) !== 'C') {
-                self::$installed = include __DIR__ . '/installed.php';
-            } else {
-                self::$installed = array();
-            }
+            self::$installed = substr(__DIR__, -8, 1) !== 'C' ? include __DIR__ . '/installed.php' : array();
         }
 
         return self::$installed;
@@ -301,21 +297,20 @@ class InstalledVersions
      * interference between PHPUnit's dependencies and the project's dependencies.
      *
      * @param  array[] $data A vendor/composer/installed.php data set
-     * @return void
      *
      * @psalm-param array{root: array{name: string, pretty_version: string, version: string, reference: string|null, type: string, install_path: string, aliases: string[], dev: bool}, versions: array<string, array{pretty_version?: string, version?: string, reference?: string|null, type?: string, install_path?: string, aliases?: string[], dev_requirement: bool, replaced?: string[], provided?: string[]}>} $data
      */
-    public static function reload($data)
+    public static function reload($data): void
     {
         self::$installed = $data;
         self::$installedByVendor = array();
     }
 
     /**
-     * @return array[]
+     * @return mixed[]
      * @psalm-return list<array{root: array{name: string, pretty_version: string, version: string, reference: string|null, type: string, install_path: string, aliases: string[], dev: bool}, versions: array<string, array{pretty_version?: string, version?: string, reference?: string|null, type?: string, install_path?: string, aliases?: string[], dev_requirement: bool, replaced?: string[], provided?: string[]}>}>
      */
-    private static function getInstalled()
+    private static function getInstalled(): array
     {
         if (null === self::$canGetVendors) {
             self::$canGetVendors = method_exists('Composer\Autoload\ClassLoader', 'getRegisteredLoaders');
@@ -339,11 +334,7 @@ class InstalledVersions
         if (null === self::$installed) {
             // only require the installed.php file if this file is loaded from its dumped location,
             // and not from its source location in the composer/composer package, see https://github.com/composer/composer/issues/9937
-            if (substr(__DIR__, -8, 1) !== 'C') {
-                self::$installed = require __DIR__ . '/installed.php';
-            } else {
-                self::$installed = array();
-            }
+            self::$installed = substr(__DIR__, -8, 1) !== 'C' ? require __DIR__ . '/installed.php' : array();
         }
         $installed[] = self::$installed;
 

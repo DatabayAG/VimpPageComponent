@@ -15,25 +15,22 @@ require_once __DIR__ . '/../vendor/autoload.php';
  */
 class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
 {
+    public $db;
+    public const CMD_CREATE = 'create';
+    public const CMD_INSERT = 'insert';
+    public const CMD_STANDARD = self::CMD_INSERT;
+    public const CMD_SHOW = 'show';
+    public const CMD_SHOW_FILTERED = 'showFiltered';
+    public const CMD_SHOW_FILTERED_OWN_VIDEOS = 'showFilteredOwnVideos';
+    public const CMD_OWN_VIDEOS = 'indexOwnVideos';
+    public const CMD_SHOW_OWN_VIDEOS = 'showOwnVideos';
+    public const CMD_EDIT_VIDEO = 'editVideo';
+    public const CMD_DELETE_VIDEO = 'deleteVideo';
+    public const CMD_UPDATE_VIDEO = 'updateVideo';
 
-    const CMD_CREATE = 'create';
-    const CMD_INSERT = 'insert';
-    const CMD_STANDARD = self::CMD_INSERT;
-    const CMD_SHOW = 'show';
-    const CMD_SHOW_FILTERED = 'showFiltered';
-    const CMD_SHOW_FILTERED_OWN_VIDEOS = 'showFilteredOwnVideos';
-    const CMD_OWN_VIDEOS = 'indexOwnVideos';
-    const CMD_SHOW_OWN_VIDEOS = 'showOwnVideos';
-    const CMD_EDIT_VIDEO = 'editVideo';
-    const CMD_DELETE_VIDEO = 'deleteVideo';
-    const CMD_UPDATE_VIDEO = 'updateVideo';
-
-    const SUBTAB_SEARCH = 'subtab_search';
-    const SUBTAB_OWN_VIDEOS = 'subtab_own_videos';
-    const CMD_EDIT = 'edit';
-    /**
-     * @var ilCtrl
-     */
+    public const SUBTAB_SEARCH = 'subtab_search';
+    public const SUBTAB_OWN_VIDEOS = 'subtab_own_videos';
+    public const CMD_EDIT = 'edit';
     protected ilCtrl $ctrl;
     /**
      * @var ilTemplate
@@ -43,9 +40,6 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
      * @var ilTabsGUI
      */
     protected $tabs;
-    /**
-     * @var ilVimpPageComponentPlugin
-     */
     protected ilVimpPageComponentPlugin $pl;
     /**
      * @var Container|mixed
@@ -143,7 +137,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
      * @throws ilCtrlException
      * @throws JsonException
      */
-    public function redirect($cmd)
+    public function redirect($cmd): void
     {
         $this->ctrl->setParameter($this, 'vpco_cmd', $cmd);
         $this->ctrl->redirect($this, self::CMD_INSERT);
@@ -153,10 +147,9 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      * @param $cmd
      *
-     * @return string
      * @throws ilCtrlException
      */
-    public function getLinkTarget($cmd)
+    public function getLinkTarget($cmd): string
     {
         $this->ctrl->setParameter($this, 'vpco_cmd', $cmd);
         return $this->ctrl->getLinkTarget($this, self::CMD_INSERT);
@@ -184,7 +177,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function show()
+    public function show(): void
     {
         $this->setSubTabs(self::SUBTAB_SEARCH);
         $this->dic->ui()->mainTemplate()->setOnScreenMessage('info', $this->pl->txt('choose_video'));
@@ -216,7 +209,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function applyFilter()
+    public function applyFilter(): void
     {
         $this->ctrl->clearParameters($this);
         $table_gui = new vpcoSearchVideosTableGUI($this, self::CMD_INSERT);
@@ -231,7 +224,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
      *
      * @throws ilException
      */
-    public function resetFilter()
+    public function resetFilter(): void
     {
         $table_gui = new xvmpSearchVideosTableGUI($this, self::CMD_INSERT);
         $table_gui->resetOffset();
@@ -243,7 +236,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function indexOwnVideos()
+    public function indexOwnVideos(): void
     {
         $this->setSubTabs(self::SUBTAB_OWN_VIDEOS);
         $this->dic->ui()->mainTemplate()->setOnScreenMessage('info', $this->pl->txt('choose_video'));
@@ -256,7 +249,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function showOwnVideos()
+    public function showOwnVideos(): void
     {
         $this->setSubTabs(self::SUBTAB_OWN_VIDEOS);
         $this->dic->ui()->mainTemplate()->setOnScreenMessage('info', $this->pl->txt('choose_video'));
@@ -270,7 +263,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function applyFilterOwnVideos()
+    public function applyFilterOwnVideos(): void
     {
         $table_gui = new vpcoOwnVideosTableGUI($this, self::CMD_INSERT);
         $table_gui->resetOffset();
@@ -281,7 +274,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function resetFilterOwnVideos()
+    public function resetFilterOwnVideos(): void
     {
         $table_gui = new vpcoOwnVideosTableGUI($this, self::CMD_INSERT);
         $table_gui->resetOffset();
@@ -304,7 +297,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function editVideo()
+    public function editVideo(): void
     {
         $mid = $_GET['mid'];
         $xvmpEditVideoFormGUI = new xvmpEditVideoFormGUI($this, $mid);
@@ -316,7 +309,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function updateVideo()
+    public function updateVideo(): void
     {
         $xvmpEditVideoFormGUI = new xvmpEditVideoFormGUI($this, $_POST['mid']);
         $xvmpEditVideoFormGUI->setValuesByPost();
@@ -331,7 +324,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function uploadVideoForm()
+    public function uploadVideoForm(): void
     {
         $xvmpEditVideoFormGUI = new xvmpUploadVideoFormGUI($this);
         $this->tpl->setContent($xvmpEditVideoFormGUI->getHTML());
@@ -341,7 +334,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function createVideo()
+    public function createVideo(): void
     {
         $xvmpEditVideoFormGUI = new xvmpUploadVideoFormGUI($this);
         $xvmpEditVideoFormGUI->setValuesByPost();
@@ -358,7 +351,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function deleteVideo()
+    public function deleteVideo(): void
     {
         $mid = $_GET['mid'];
         $video = xvmpMedium::find($mid);
@@ -375,16 +368,16 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function confirmedDeleteVideo()
+    public function confirmedDeleteVideo(): void
     {
-        $mid = (int)$_POST['mid'];
+        $mid = (int) $_POST['mid'];
 
         // fetch the video for logging purposes
-        $video = xvmpMedium::getObjectAsArray($mid);
+        xvmpMedium::getObjectAsArray($mid);
 
         xvmpMedium::deleteObject($mid);
 
-//		xvmpEventLog::logEvent(xvmpEventLog::ACTION_DELETE, $this->getObjId(), $video);
+        //		xvmpEventLog::logEvent(xvmpEventLog::ACTION_DELETE, $this->getObjId(), $video);
 
         $this->dic->ui()->mainTemplate()->setOnScreenMessage('info', $this->pl->txt('video_deleted'));
         $this->redirect(self::CMD_STANDARD);
@@ -445,7 +438,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function update()
+    public function update(): void
     {
         global $tpl, $lng;
 
@@ -467,11 +460,10 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
 
 
     /**
-     * @return ilPropertyFormGUI
      * @throws ilTemplateException
      * @throws xvmpException
      */
-    public function initForm()
+    public function initForm(): \ilPropertyFormGUI
     {
         global $lng, $ilCtrl, $tpl;
 
@@ -481,11 +473,11 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $tpl->addJavaScript($this->getPlugin()->getDirectory() . '/js/vpco.js');
         $tpl->addOnLoadCode('VimpPageComponent.initForm();');
 
-        include_once("Services/Form/classes/class.ilPropertyFormGUI.php");
+        include_once(__DIR__ . "/Services/Form/classes/class.ilPropertyFormGUI.php");
         $form = new ilPropertyFormGUI();
         $prop = $this->getProperties();
-        $prop['width'] = round((int)$prop['width']);
-        $prop['height'] = round((int)$prop['height']);
+        $prop['width'] = round((int) $prop['width']);
+        $prop['height'] = round((int) $prop['height']);
         $video = xvmpMedium::find($prop['mid']);
 
         // slider
@@ -521,7 +513,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      *
      */
-    public function cancel()
+    public function cancel(): void
     {
         $this->returnToParent();
     }
@@ -531,9 +523,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
      * Get HTML for element
      *
      * @param       $a_mode
-     * @param array $a_properties
      * @param       $a_plugin_version
-     *
      * @return mixed
      */
     public function getElementHTML($a_mode, array $a_properties, $a_plugin_version): string
@@ -562,7 +552,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     /**
      * @param $active
      */
-    protected function setSubTabs($active)
+    protected function setSubTabs(string $active)
     {
         $this->tabs->addSubTab(self::SUBTAB_SEARCH, $this->pl->txt(self::SUBTAB_SEARCH), $this->getLinkTarget(self::CMD_STANDARD));
         $this->tabs->addSubTab(self::SUBTAB_OWN_VIDEOS, $this->pl->txt(self::SUBTAB_OWN_VIDEOS), $this->getLinkTarget(self::CMD_OWN_VIDEOS));
@@ -571,16 +561,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
 
 
     /**
-     * @return ilVimpPageComponentPlugin
-     */
-    public function getPlugin(): ilPageComponentPlugin
-    {
-        return parent::getPlugin();
-    }
-
-
-    /**
-     * @return array
+     * @return array{skin: string, min: int, max: int, from: int, from_min: int, step: int, grid: true, postfix: string}
      */
     protected function getRangeSliderConfig(): array
     {

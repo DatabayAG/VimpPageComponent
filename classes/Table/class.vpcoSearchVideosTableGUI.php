@@ -11,57 +11,56 @@ use srag\Plugins\ViMP\UIComponents\Player\VideoPlayer;
  *
  * @author  Theodor Truffer <tt@studer-raimann.ch>
  */
-class vpcoSearchVideosTableGUI extends xvmpSearchVideosTableGUI {
+class vpcoSearchVideosTableGUI extends xvmpSearchVideosTableGUI
+{
+    public ilDBInterface $db;
+    public const ROW_TEMPLATE = 'tpl.search_videos_row.html';
+    protected array $available_columns = array(
+        'thumbnail' => array(
+            'no_header' => true
+        ),
+        'title' => array(
+            'sort_field' => 'title',
+        ),
+        'description' => array(
+            'sort_field' => 'description',
+        ),
+        'username' => array(
+            'sort_field' => 'user',
+        ),
+        'created_at' => array(
+            'sort_field' => 'unix_time',
+        ),
+    );
 
-	const ROW_TEMPLATE = 'tpl.search_videos_row.html';
+
     /**
-     * @var array
+     * vpcoSearchVideosTableGUI constructor.
+     *
+     * @param       $parent_gui
+     * @param string $parent_cmd
      */
-	protected array $available_columns = array(
-		'thumbnail' => array(
-			'no_header' => true
-		),
-		'title' => array(
-			'sort_field' => 'title',
-		),
-		'description' => array(
-			'sort_field' => 'description',
-		),
-		'username' => array(
-			'sort_field' => 'user',
-		),
-		'created_at' => array(
-			'sort_field' => 'unix_time',
-		),
-	);
-
-
-	/**
-	 * vpcoSearchVideosTableGUI constructor.
-	 *
-	 * @param       $parent_gui
-	 * @param string $parent_cmd
-	 */
-	public function __construct($parent_gui, $parent_cmd) {
+    public function __construct($parent_gui, $parent_cmd)
+    {
         global $DIC;
-		parent::__construct($parent_gui, $parent_cmd);
+        parent::__construct($parent_gui, $parent_cmd);
         VideoPlayer::loadVideoJSAndCSS(false);
-		$base_link = $this->ctrl->getLinkTargetByClass(array(ilObjPluginDispatchGUI::class, ilObjViMPGUI::class, xvmpOwnVideosGUI::class),'', '', true);
-		$this->tpl_global->addOnLoadCode('VimpContent.ajax_base_url = "'.$base_link.'";');
+        $base_link = $this->ctrl->getLinkTargetByClass(array(ilObjPluginDispatchGUI::class, ilObjViMPGUI::class, xvmpOwnVideosGUI::class), '', '', true);
+        $this->tpl_global->addOnLoadCode('VimpContent.ajax_base_url = "' . $base_link . '";');
         $this->db = $DIC->database();
-		$this->pl = new ilVimpPageComponentPlugin($this->db, $DIC["component.repository"], ilVimpPageComponentPlugin::PLUGIN_ID);
-		$this->setRowTemplate($this->pl->getDirectory() . '/templates/' . static::ROW_TEMPLATE);
+        $this->pl = new ilVimpPageComponentPlugin($this->db, $DIC["component.repository"], ilVimpPageComponentPlugin::PLUGIN_ID);
+        $this->setRowTemplate($this->pl->getDirectory() . '/templates/' . static::ROW_TEMPLATE);
 
-		$this->addHiddenInput('pco_data', json_encode($_POST));
-		//$this->addHiddenInput('commandpg', $_POST['commandpg']);
-		$this->addHiddenInput('target', json_encode($_POST['target']));
+        $this->addHiddenInput('pco_data', json_encode($_POST));
+        //$this->addHiddenInput('commandpg', $_POST['commandpg']);
+        $this->addHiddenInput('target', json_encode($_POST['target']));
 
-		$this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', 'applyFilter');
-		$this->setFormAction($this->ctrl->getFormAction($this->parent_obj));
+        $this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', 'applyFilter');
+        $this->setFormAction($this->ctrl->getFormAction($this->parent_obj));
 
-		$this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', 'show');
+        $this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', 'show');
 
-	}
+    }
 
     public function getHTML(): string
     {
@@ -69,35 +68,35 @@ class vpcoSearchVideosTableGUI extends xvmpSearchVideosTableGUI {
     }
 
     /**
-	 *
-	 */
-	protected function initColumns() {
-		$this->addColumn($this->pl->txt('added'), '', "210", false);
-
-		xvmpTableGUI::initColumns();
-
-		$this->addColumn('', '', "100", true);
-	}
-
-
-	/**
-	 * @param xvmpObject $a_set
-	 */
-	protected function fillRow($a_set): void
+     *
+     */
+    protected function initColumns(): void
     {
-		$this->tpl->setVariable('VAL_MID', $a_set['mid']);
+        $this->addColumn($this->pl->txt('added'), '', "210", false);
 
-		foreach ($this->available_columns as $title => $props)
-		{
-			if ($title == 'thumbnail') {
-				$this->tpl->setVariable('VAL_' . strtoupper($title), $a_set[$title] . '&size=' . self::THUMBSIZE);
-				continue;
-			}
+        xvmpTableGUI::initColumns();
 
-			$this->tpl->setVariable('VAL_' . strtoupper($title), $a_set[$title] ? $a_set[$title] : '&nbsp;');
-		}
+        $this->addColumn('', '', "100", true);
+    }
 
-        foreach ($this->getSelectableColumns() as $title => $props) {
+
+    /**
+     * @param xvmpObject $a_set
+     */
+    protected function fillRow($a_set): void
+    {
+        $this->tpl->setVariable('VAL_MID', $a_set['mid']);
+
+        foreach (array_keys($this->available_columns) as $title) {
+            if ($title == 'thumbnail') {
+                $this->tpl->setVariable('VAL_' . strtoupper($title), $a_set[$title] . '&size=' . self::THUMBSIZE);
+                continue;
+            }
+
+            $this->tpl->setVariable('VAL_' . strtoupper($title), $a_set[$title] ? $a_set[$title] : '&nbsp;');
+        }
+
+        foreach (array_keys($this->getSelectableColumns()) as $title) {
             if ($this->isColumnSelected($title)) {
                 $this->tpl->setCurrentBlock('generic');
                 $this->tpl->setVariable('VAL_GENERIC', $this->parseColumnValue($title, $a_set[$title]));
@@ -105,29 +104,28 @@ class vpcoSearchVideosTableGUI extends xvmpSearchVideosTableGUI {
             }
         }
 
-		$this->tpl->setVariable('VAL_ADD', $this->getAddButton($a_set));
-	}
+        $this->tpl->setVariable('VAL_ADD', $this->getAddButton($a_set));
+    }
 
 
-	/**
-	 * @param $a_set
-	 *
-	 * @return string
-	 */
-	protected function getAddButton($a_set): string
+    /**
+     * @param $a_set
+     */
+    protected function getAddButton($a_set): string
     {
-		$button = ilLinkButton::getInstance();
-		$button->setCaption('add');
-		$this->ctrl->setParameter($this->parent_obj, 'mid', $a_set['mid']);
-		$button->setUrl($this->ctrl->getLinkTarget($this->parent_obj, ilVimpPageComponentPluginGUI::CMD_CREATE));
-		return $button->getToolbarHTML();
-	}
+        $button = ilLinkButton::getInstance();
+        $button->setCaption('add');
+        $this->ctrl->setParameter($this->parent_obj, 'mid', $a_set['mid']);
+        $button->setUrl($this->ctrl->getLinkTarget($this->parent_obj, ilVimpPageComponentPluginGUI::CMD_CREATE));
+        return $button->getToolbarHTML();
+    }
 
-	/**
-	 *
-	 */
-	protected function redirectToParent() {
-		$this->ctrl->clearParameters($this->parent_obj);
-		$this->ctrl->redirect($this->parent_obj, ilVimpPageComponentPluginGUI::CMD_STANDARD);
-	}
+    /**
+     *
+     */
+    protected function redirectToParent(): void
+    {
+        $this->ctrl->clearParameters($this->parent_obj);
+        $this->ctrl->redirect($this->parent_obj, ilVimpPageComponentPluginGUI::CMD_STANDARD);
+    }
 }

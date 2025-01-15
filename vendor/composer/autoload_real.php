@@ -4,9 +4,9 @@
 
 class ComposerAutoloaderInite383454822bc00af63c25add29632241
 {
-    private static $loader;
+    private static ?\Composer\Autoload\ClassLoader $loader = null;
 
-    public static function loadClassLoader($class)
+    public static function loadClassLoader($class): void
     {
         if ('Composer\Autoload\ClassLoader' === $class) {
             require __DIR__ . '/ClassLoader.php';
@@ -18,7 +18,7 @@ class ComposerAutoloaderInite383454822bc00af63c25add29632241
      */
     public static function getLoader()
     {
-        if (null !== self::$loader) {
+        if (self::$loader instanceof \Composer\Autoload\ClassLoader) {
             return self::$loader;
         }
 
@@ -48,7 +48,7 @@ class ComposerAutoloaderInite383454822bc00af63c25add29632241
  * @param string $file
  * @return void
  */
-function composerRequiree383454822bc00af63c25add29632241($fileIdentifier, $file)
+function composerRequiree383454822bc00af63c25add29632241($fileIdentifier, $file): void
 {
     if (empty($GLOBALS['__composer_autoload_files'][$fileIdentifier])) {
         $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;

@@ -13,12 +13,12 @@ require_once __DIR__ . "/../vendor/autoload.php";
  */
 class ilVimpPageComponentConfigGUI extends ilPluginConfigGUI
 {
-    const PLUGIN_CLASS_NAME = ilVimpPageComponentPlugin::class;
+    public const PLUGIN_CLASS_NAME = ilVimpPageComponentPlugin::class;
 
-    const CMD_CONFIGURE = "configure";
-    const CMD_UPDATE_CONFIGURE = "updateConfigure";
-    const LANG_MODULE = "config";
-    const TAB_CONFIGURATION = "configuration";
+    public const CMD_CONFIGURE = "configure";
+    public const CMD_UPDATE_CONFIGURE = "updateConfigure";
+    public const LANG_MODULE = "config";
+    public const TAB_CONFIGURATION = "configuration";
     private ilVimpPageComponentPlugin $pl;
     /**
      * @var \ILIAS\DI\Container|mixed
@@ -81,10 +81,7 @@ class ilVimpPageComponentConfigGUI extends ilPluginConfigGUI
     }
 
 
-    /**
-     * @return ilPropertyFormGUI
-     */
-    protected function getConfigForm() : ilPropertyFormGUI
+    protected function getConfigForm(): ilPropertyFormGUI
     {
         $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
         $confForm = new ilPropertyFormGUI();
@@ -132,7 +129,7 @@ class ilVimpPageComponentConfigGUI extends ilPluginConfigGUI
             $this->dic->ui()->mainTemplate()->setOnScreenMessage('success', $this->pl->txt('config_configuration_saved'), true);
         }
 
-        $this->dic->ctrl()->redirect($this,self::CMD_CONFIGURE);
+        $this->dic->ctrl()->redirect($this, self::CMD_CONFIGURE);
 
         $form->setValuesByPost();
         $this->tpl->setContent($form->getHTML());
