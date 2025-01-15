@@ -1,4 +1,7 @@
 # Changelog
+## [1.9.0]
+- ILIAS 9 support
+
 ## [1.8.0]
 - Fix: database migration
 - Fix: pagination and row limit of own videos did not work
