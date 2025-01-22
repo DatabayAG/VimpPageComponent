@@ -11,6 +11,6 @@ Start at your ILIAS root directory
 ```bash
 mkdir -p Customizing/global/plugins/Services/COPage/PageComponent/
 cd Customizing/global/plugins/Services/COPage/PageComponent
-git clone https://github.com/E-Learning-FHDO/VimpPageComponent.git
+git clone https://github.com/DatabayAG/VimpPageComponent
 ```
 As ILIAS administrator go to "Administration->Plugins" and install/activate the plugin.
