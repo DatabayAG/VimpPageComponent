@@ -3,7 +3,7 @@ VimpPageComponent
 ### Description
 This is an open source project forked from https://github.com/fluxapps/VimpPageComponent
 
-This is an additional Plugin for the ViMP Plugin, thus it only works with ViMP installed (see https://github.com/E-Learning-FHDO/ViMP).
+This is an additional Plugin for the ViMP Plugin, thus it only works with ViMP installed (see https://github.com/DatabayAG/ViMP).
 It allows you to add videos from ViMP in any Text-Media-Editor in ILIAS.
 
 ### Installation
