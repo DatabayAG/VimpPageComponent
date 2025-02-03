@@ -472,8 +472,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $tpl->addCss($this->getPlugin()->getDirectory() . '/templates/form.css');
         $tpl->addJavaScript($this->getPlugin()->getDirectory() . '/js/vpco.js');
         $tpl->addOnLoadCode('VimpPageComponent.initForm();');
-
-        include_once(__DIR__ . "/Services/Form/classes/class.ilPropertyFormGUI.php");
+        
         $form = new ilPropertyFormGUI();
         $prop = $this->getProperties();
         $prop['width'] = round((int) $prop['width']);
