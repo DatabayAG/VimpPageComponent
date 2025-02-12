@@ -57,8 +57,9 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
 
         $this->addHiddenInput('pco_data', json_encode($_POST));
         //$this->addHiddenInput('commandpg', $_POST['commandpg']);
-        $this->addHiddenInput('target', json_encode($_POST['target']));
-
+        if(isset($_POST['target'])) {
+            $this->addHiddenInput('target', json_encode($_POST['target']));
+        }
         $this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', 'applyFilterOwnVideos');
         $this->setFormAction($this->ctrl->getFormAction($this->parent_obj));
         $this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', 'showOwnVideos');
