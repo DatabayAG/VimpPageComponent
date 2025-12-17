@@ -1,33 +1,35 @@
 <tr class="{CSS_ROW} {ADDITIONAL_CSS} xvmp_table_row" id="xvmp_row_{VAL_MID}">
-	<td class="std small">
-		<a onclick="VimpContent.playVideo({VAL_MID});">
-			<div class="xvmp_image_container">
-				<img width="170px" height="95px" class="xvmp_preview_image" src="{VAL_THUMBNAIL}" onerror="this.src='./Customizing/global/plugins/Services/Repository/RepositoryObject/ViMP/templates/images/vimp_logo.svg'">
-				<div class="xvmp_play_overlay">
-					<div class="xvmp_pseudo_element"></div> <!-- this is necessary to center the following image -->
-					<img class="xvmp_play_icon" width="32px" height="32px" src="./Customizing/global/plugins/Services/Repository/RepositoryObject/ViMP/templates/images/play.svg">
-				</div>
-			</div>
-		</a>
-	</td>
-	<td class="std small">
-		{VAL_TITLE}
-	</td>
-	<td class="std small">
-		{VAL_PUBLISHED}
-	</td>
-	<td class="std small">
-		{VAL_STATUS_TEXT}
-	</td>
-	<td class="std small">
-		{VAL_CREATED_AT}
-	</td>
-	<!-- BEGIN generic -->
-	<td class="std small">
-		{VAL_GENERIC}
-	</td>
-	<!-- END generic -->
-	<td class="std small">
-		{VAL_ADD}
-	</td>
+    <td class="std small">
+        <a onclick="VimpContent.playVideo({VAL_MID});">
+            <div class="xvmp_image_container">
+                <img class="xvmp_preview_image" height="95px" onerror="this.src='./Customizing/global/plugins/Services/Repository/RepositoryObject/ViMP/templates/images/vimp_logo.svg'" src="{VAL_THUMBNAIL}"
+                     width="170px">
+                <div class="xvmp_play_overlay">
+                    <div class="xvmp_pseudo_element"></div> <!-- this is necessary to center the following image -->
+                    <img class="xvmp_play_icon" height="32px" src="./Customizing/global/plugins/Services/Repository/RepositoryObject/ViMP/templates/images/play.svg"
+                         width="32px">
+                </div>
+            </div>
+        </a>
+    </td>
+    <td class="std small">
+        {VAL_TITLE}
+    </td>
+    <td class="std small">
+        {VAL_PUBLISHED}
+    </td>
+    <td class="std small">
+        {VAL_STATUS_TEXT}
+    </td>
+    <td class="std small">
+        {VAL_CREATED_AT}
+    </td>
+    <!-- BEGIN generic -->
+    <td class="std small">
+        {VAL_GENERIC}
+    </td>
+    <!-- END generic -->
+    <td class="std small">
+        {VAL_ADD}
+    </td>
 </tr>

@@ -1,8 +1,9 @@
 <input id="vpco_slider" type="range">
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-	    let config = {CONFIG};
-	    config.onChange = VimpPageComponent.sliderCallback;
-	    $("#vpco_slider").ionRangeSlider(config);
-    });
+  document.addEventListener('DOMContentLoaded', function () {
+    let config = {VIMP_SLIDER_CONFIG};
+    config.onChange = VimpPageComponent.sliderCallback;
+    $('#vpco_slider')
+      .ionRangeSlider(config);
+  });
 </script>

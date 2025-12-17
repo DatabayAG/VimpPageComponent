@@ -8,12 +8,10 @@ use srag\Plugins\ViMP\UIComponents\Player\VideoPlayer;
 
 /**
  * Class vpcoOwnVideosTableGUI
- *
  * @author  Theodor Truffer <tt@studer-raimann.ch>
  */
 class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
 {
-    public ilDBInterface $db;
     protected array $available_columns = array(
         'thumbnail' => array(
             'no_header' => true
@@ -32,12 +30,11 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
         )
     );
     protected \ilViMPPlugin $vimp_pl;
-
+    public ilDBInterface $db;
 
     /**
      * vpcoSearchVideosTableGUI constructor.
-     *
-     * @param       $parent_gui
+     * @param        $parent_gui
      * @param string $parent_cmd
      * @param        $vpco_cmd
      */
@@ -45,19 +42,24 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
     {
         global $DIC;
         $this->db = $DIC->database();
-        parent::__construct($parent_gui, $vpco_cmd == ilVimpPageComponentPluginGUI::CMD_SHOW_FILTERED_OWN_VIDEOS ? xvmpOwnVideosGUI::CMD_SHOW_FILTERED : $parent_cmd);
+        parent::__construct($parent_gui,
+            $vpco_cmd == ilVimpPageComponentPluginGUI::CMD_SHOW_FILTERED_OWN_VIDEOS ? xvmpOwnVideosGUI::CMD_SHOW_FILTERED : $parent_cmd);
         VideoPlayer::loadVideoJSAndCSS(false);
 
-        $base_link = $this->ctrl->getLinkTargetByClass(array(ilObjPluginDispatchGUI::class, ilObjViMPGUI::class, xvmpOwnVideosGUI::class), '', '', true);
+        $base_link = $this->ctrl->getLinkTargetByClass(array(ilObjPluginDispatchGUI::class,
+                                                             ilObjViMPGUI::class,
+                                                             xvmpOwnVideosGUI::class
+        ), '', '', true);
         $this->tpl_global->addOnLoadCode('VimpContent.ajax_base_url = "' . $base_link . '";');
 
-        $this->pl = new ilVimpPageComponentPlugin($this->db, $DIC["component.repository"], ilVimpPageComponentPlugin::PLUGIN_ID);
+        $this->pl = new ilVimpPageComponentPlugin($this->db, $DIC["component.repository"],
+            ilVimpPageComponentPlugin::PLUGIN_ID);
         $this->vimp_pl = ilViMPPlugin::getInstance();
         $this->setRowTemplate($this->pl->getDirectory() . '/templates/' . static::ROW_TEMPLATE);
 
         $this->addHiddenInput('pco_data', json_encode($_POST));
         //$this->addHiddenInput('commandpg', $_POST['commandpg']);
-        if(isset($_POST['target'])) {
+        if (isset($_POST['target'])) {
             $this->addHiddenInput('target', json_encode($_POST['target']));
         }
         $this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', 'applyFilterOwnVideos');
@@ -69,7 +71,8 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
             $this->tpl = new ilTemplate("tpl.own_videos_table.html", true, true, $this->vimp_pl->getDirectory());
             $this->tpl->setVariable('TABLE_CONTENT_HIDDEN', 'hidden');
             $this->tpl->setCurrentBlock('xvmp_show_videos_button');
-            $this->ctrl->setParameter($this->parent_obj, 'vpco_cmd', ilVimpPageComponentPluginGUI::CMD_SHOW_FILTERED_OWN_VIDEOS);
+            $this->ctrl->setParameter($this->parent_obj, 'vpco_cmd',
+                ilVimpPageComponentPluginGUI::CMD_SHOW_FILTERED_OWN_VIDEOS);
             $this->tpl->setVariable(
                 'SHOW_VIDEOS_LINK',
                 $this->ctrl->getLinkTarget(
@@ -82,16 +85,10 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
         }
     }
 
-    public function getHTML(): string
-    {
-        return parent::getHTML() . xvmpGUI::getModalPlayer()->getHTML();
-    }
-
-
     /**
      *
      */
-    protected function initColumns(): void
+    protected function initColumns() : void
     {
         $this->addColumn($this->pl->txt('added'), '', "210", false);
 
@@ -100,11 +97,10 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
         $this->addColumn('', '', "75", true);
     }
 
-
     /**
      * @param xvmpObject $a_set
      */
-    protected function fillRow($a_set): void
+    protected function fillRow($a_set) : void
     {
         if ($a_set['status'] == 'error') {
             $this->tpl->setVariable('VAL_DISABLED', 'disabled');
@@ -113,7 +109,6 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
         $this->tpl->setVariable('VAL_MID', $a_set['mid']);
 
         $this->tpl->setVariable('VAL_STATUS_TEXT', $this->vimp_pl->txt('status_' . $a_set['status']));
-
 
         foreach (array_keys($this->available_columns) as $title) {
             $this->tpl->setVariable('VAL_' . strtoupper($title), $a_set[$title]);
@@ -134,12 +129,17 @@ class vpcoOwnVideosTableGUI extends xvmpOwnVideosTableGUI
     /**
      * @param $a_set
      */
-    protected function getAddButton($a_set): string
+    protected function getAddButton($a_set) : string
     {
         $button = ilLinkButton::getInstance();
         $button->setCaption('add');
         $this->ctrl->setParameter($this->parent_obj, 'mid', $a_set['mid']);
         $button->setUrl($this->ctrl->getLinkTarget($this->parent_obj, ilVimpPageComponentPluginGUI::CMD_CREATE));
         return $button->getToolbarHTML();
+    }
+
+    public function getHTML() : string
+    {
+        return parent::getHTML() . xvmpGUI::getModalPlayer()->getHTML();
     }
 }

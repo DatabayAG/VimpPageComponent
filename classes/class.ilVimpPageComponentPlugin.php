@@ -6,7 +6,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
  * Class ilVimpPageComponentPlugin
- *
  * @author Theodor Truffer <tt@studer-raimann.ch>
  */
 class ilVimpPageComponentPlugin extends ilPageComponentPlugin
@@ -26,24 +25,7 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin
         parent::__construct($this->db, $DIC["component.repository"], self::PLUGIN_ID);
     }
 
-    /**
-     * Get plugin name
-     */
-    public function getPluginName(): string
-    {
-        return self::PLUGIN_NAME;
-    }
-
-
-    /**
-     * Get plugin name
-     */
-    public function isValidParentType($a_parent_type): bool
-    {
-        return true;
-    }
-
-    public static function getInstance(): ilVimpPageComponentPlugin
+    public static function getInstance() : ilVimpPageComponentPlugin
     {
         if (!isset(self::$instance)) {
             self::$instance = new self();
@@ -52,7 +34,7 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin
         return self::$instance;
     }
 
-    public static function setValue($setting, $value, $type): void
+    public static function setValue($setting, $value, $type) : void
     {
         global $DIC;
         $db = $DIC->database();
@@ -77,5 +59,21 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin
             return $rec['value'];
         }
         return null;
+    }
+
+    /**
+     * Get plugin name
+     */
+    public function getPluginName() : string
+    {
+        return self::PLUGIN_NAME;
+    }
+
+    /**
+     * Get plugin name
+     */
+    public function isValidParentType($a_parent_type) : bool
+    {
+        return true;
     }
 }

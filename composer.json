@@ -26,7 +26,6 @@
     "files": [
       "../../../Repository/RepositoryObject/ViMP/vendor/autoload.php"
     ]
-
   },
   "config": {
     "optimize-autoloader": true,
