@@ -106,7 +106,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
                 $url = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
                 $this->ctrl->clearParameters($this);
                 $name = $this->lng->txt('reset_filter');
-                $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/vpco.js');
+                $this->tpl->addJavaScript('Customizing/global/plugins/Services/COPage/PageComponent/VimpPageComponent/js/vpco.js');
                 $this->tpl->addOnLoadCode('VimpPageComponent.overwriteResetButton("' . $name . '", "' . $url . '");');
                 $this->$cmd();
                 break;
@@ -117,7 +117,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
                 $url = $this->ctrl->getLinkTarget($this, self::CMD_STANDARD);
                 $this->ctrl->clearParameters($this);
                 $name = $this->lng->txt('reset_filter');
-                $this->tpl->addJavaScript($this->pl->getDirectory() . '/js/vpco.js');
+                $this->tpl->addJavaScript('Customizing/global/plugins/Services/COPage/PageComponent/VimpPageComponent/js/vpco.js');
                 $this->tpl->addOnLoadCode('VimpPageComponent.overwriteResetButton("' . $name . '", "' . $url . '");');
                 $this->$cmd();
                 break;
@@ -467,12 +467,12 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
     {
         global $lng, $ilCtrl, $tpl;
 
-        $tpl->addJavaScript($this->getPlugin()->getDirectory() . '/node_modules/ion-rangeslider/js/ion.rangeSlider.min.js');
-        $tpl->addCss($this->getPlugin()->getDirectory() . '/node_modules/ion-rangeslider/css/ion.rangeSlider.min.css');
-        $tpl->addCss($this->getPlugin()->getDirectory() . '/templates/form.css');
-        $tpl->addJavaScript($this->getPlugin()->getDirectory() . '/js/vpco.js');
+        $tpl->addJavaScript('Customizing/global/plugins/Services/COPage/PageComponent/VimpPageComponent/node_modules/ion-rangeslider/js/ion.rangeSlider.min.js');
+        $tpl->addCss('Customizing/global/plugins/Services/COPage/PageComponent/VimpPageComponent/node_modules/ion-rangeslider/css/ion.rangeSlider.min.css');
+        $tpl->addCss('Customizing/global/plugins/Services/COPage/PageComponent/VimpPageComponent//templates/form.css');
+        $this->tpl->addJavaScript('Customizing/global/plugins/Services/COPage/PageComponent/VimpPageComponent/js/vpco.js');
         $tpl->addOnLoadCode('VimpPageComponent.initForm();');
-        
+
         $form = new ilPropertyFormGUI();
         $prop = $this->getProperties();
         $prop['width'] = round((int) $prop['width']);
@@ -539,8 +539,9 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
             $video_player->setOption('width', $a_properties['width'] . 'px');
             return $video_player->getHTML();
         } catch (xvmpException $e) {
+            $img = './Customizing/global/plugins/Services/Repository/RepositoryObject/ViMP/templates/images/not_available.png';
             return '<img 
-				src="' . ilViMPPlugin::getInstance()->getImagePath('not_available.png') . '" 
+				src="' . $img . '" 
 				height="' . $a_properties['height'] . '" 
 				width="' . $a_properties['width'] . '"
 			>';
