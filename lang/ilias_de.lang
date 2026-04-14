@@ -16,3 +16,6 @@ config_default_width#:#Standard-Breite
 config_default_width_info#:#Falls nicht gesetzt, wird die Standard-Breite des Videos verwendet.
 config_default_height#:#Standard-Höhe
 config_default_height_info#:#Falls nicht gesetzt, wird die Standard-Höhe des Videos verwendet.
+static#:#Statisch
+responsive#:#Responsive
+type#:#Darstellungstyp

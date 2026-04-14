@@ -443,22 +443,32 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $tpl->addOnLoadCode('VimpPageComponent.initForm();');
 
         $form = new ilPropertyFormGUI();
+        $item_group = new ilRadioGroupInputGUI($this->plugin->txt('type'), 'type');
         $prop = $this->getProperties();
         $prop['width'] = round((int) $prop['width']);
         $prop['height'] = round((int) $prop['height']);
+        $prop['ratio'] = $prop['ratio'] ?? '16:9';
+        $prop['type'] = $prop['type'] ?? 'static';
         $video = xvmpMedium::find($prop['mid']);
+
+        $option_1 = new ilRadioOption($this->plugin->txt('static'), 'static');
+        $option_2 = new ilRadioOption($this->plugin->txt('responsive'), 'responsive');
 
         // slider
         $slider = new ilNonEditableValueGUI('', '', true);
         $slider_tpl = $this->getPlugin()->getTemplate('tpl.slider_input.html', false, false);
         $slider_tpl->setVariable('VIMP_SLIDER_CONFIG', json_encode($this->getRangeSliderConfig(), JSON_THROW_ON_ERROR));
         $slider->setValue($slider_tpl->get());
-        $form->addItem($slider);
+        $option_1->addSubItem($slider);
 
         // thumbnail
         $thumbnail = new ilNonEditableValueGUI($lng->txt('preview'), '', true);
         $thumbnail->setValue('<img width="' . $prop['width'] . 'px" height="' . $prop['height'] . 'px" id="vpco_thumbnail" src="' . $video->getThumbnail() . '">');
-        $form->addItem($thumbnail);
+        $option_1->addSubItem($thumbnail);
+
+        $item_group->addOption($option_1);
+
+        $form->addItem($item_group);
 
         // width height
         $width_height = new ilWidthHeightInputGUI($lng->txt("cont_width") .
@@ -466,7 +476,15 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $width_height->setConstrainProportions(true);
         $width_height->setRequired(true);
         $width_height->setValueByArray(['size' => array_merge($prop, ['constr_prop' => true])]);
+        $width = (int) $prop['width'];
+        $height = (int) $prop['height'];
+        $ratio = $this->plugin->getAspectRatio($width, $height);
+        $width_height->setInfo($ratio);
+
         $form->addItem($width_height);
+
+        $item_group->addOption($option_2);
+        $item_group->setValue($prop['type']);
 
         $form->addCommandButton("update", $lng->txt("save"));
         $form->addCommandButton("cancel", $lng->txt("cancel"));
@@ -504,9 +522,15 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $form = $this->initForm();
         if ($form->checkInput()) {
             $properties = $this->getProperties();
+            $type = $form->getInput('type');
             $size = $form->getInput('size');
             $properties['width'] = $size['width'];
             $properties['height'] = $size['height'];
+            $width = (int) $size['width'];
+            $height = (int) $size['height'];
+            $ratio = $this->plugin->getAspectRatio($width, $height);
+            $properties['ratio'] = $ratio;
+            $properties['type'] = $type;
             if ($this->updateElement($properties)) {
                 $this->dic->ui()->mainTemplate()->setOnScreenMessage('info', $this->pl->txt('msg_obj_modified'));
                 $this->returnToParent();
@@ -544,6 +568,8 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
                 xvmpConf::getConfig(xvmpConf::F_EMBED_PLAYER) || xvmpMedium::isVimeoOrYoutube($video));
             $video_player->setOption('height', $a_properties['height'] . 'px');
             $video_player->setOption('width', $a_properties['width'] . 'px');
+            $video_player->setOption('ratio', $a_properties['ratio']);
+            $video_player->setOption('type', $a_properties['type']);
             return $video_player->getHTML();
         } catch (xvmpException $e) {
             $img = './Customizing/global/plugins/Services/Repository/RepositoryObject/ViMP/templates/images/not_available.png';

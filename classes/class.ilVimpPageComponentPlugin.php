@@ -76,4 +76,15 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin
     {
         return true;
     }
+    public function getAspectRatio(int $width, int $height) : string
+    {
+        $greatestCommonDivisor = static function($width, $height) use (&$greatestCommonDivisor) {
+            return ($width % $height) ? $greatestCommonDivisor($height, $width % $height) : $height;
+        };
+
+        $divisor = $greatestCommonDivisor($width, $height);
+
+        return $width / $divisor . '/' . $height / $divisor;
+    }
+
 }
