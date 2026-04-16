@@ -14,12 +14,12 @@ VimpPageComponent = {
       .data('ionRangeSlider');
     VimpPageComponent.updateSlider();
 
-    $('input#prop_size_width')
+    $('input#size')
       .change(function () {
-        let new_width = $(this)
-          .val();
-        let new_height = $('#vpco_thumbnail')
-          .height();
+        let size = $(this).val();
+        size = JSON.parse(size);
+        let new_width = size.width;
+        let new_height = size.height;
         if (VimpPageComponent.keepAspectRatio()) {
           let current_width = $('#vpco_thumbnail')
             .width();
@@ -35,42 +35,14 @@ VimpPageComponent = {
         $('#vpco_thumbnail')
           .width(new_width);
         VimpPageComponent.updateSlider();
-        VimpPageComponent.updateRatio(new_width, new_height);
       });
-
-    $('input#prop_size_height')
-      .change(function () {
-        let new_height = $(this)
-          .val();
-        let new_width = $('#vpco_thumbnail')
-          .width();
-        if (VimpPageComponent.keepAspectRatio()) {
-          let current_width = $('#vpco_thumbnail')
-            .width();
-          let current_height = $('#vpco_thumbnail')
-            .height();
-          let ratio = (current_width / current_height);
-          new_width = Math.round(new_height * ratio);
-          $('#vpco_thumbnail')
-            .width(new_width);
-          $('input#prop_size_width')
-            .val(new_width);
-          VimpPageComponent.updateSlider();
-        }
-        $('#vpco_thumbnail')
-          .height(new_height);
-        VimpPageComponent.updateRatio(new_width, new_height);
-      });
-  },
-
-  updateRatio: function (width, height) {
-    $('#desc_size')
-      .html(VimpPageComponent.getAspectRatio(width, height));
   },
 
   updateSlider: function () {
-    let width = $('input#prop_size_width')
-      .val();
+    let size = $('input#size').val();
+    size = JSON.parse(size);
+    let width = size.width;
+
     let percentage = (width / VimpPageComponent.max_width) * 100;
     VimpPageComponent.slider.update({ from: percentage });
   },
@@ -88,13 +60,10 @@ VimpPageComponent = {
 
     $('#vpco_thumbnail')
       .width(new_width);
-    $('input#prop_size_width')
-      .val(new_width);
     $('#vpco_thumbnail')
       .height(new_height);
-    $('input#prop_size_height')
-      .val(new_height);
-    VimpPageComponent.updateRatio(new_width, new_height);
+
+    $('input#size').val(JSON.stringify({width: new_width, height: new_height}));
   },
 
   getAspectRatio: function (width, height) {
