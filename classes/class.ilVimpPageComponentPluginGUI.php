@@ -448,13 +448,13 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $prop['width'] = round((int) $prop['width']);
         $prop['height'] = round((int) $prop['height']);
         $prop['ratio'] = $prop['ratio'] ?? '16:9';
-        $prop['type'] = $prop['type'] ?? 'static';
+        $prop['type'] = $prop['type'] ?? 'responsive';
         $video = xvmpMedium::find($prop['mid']);
         $prop['orig_width'] = $video->getProperties()['width'];
         $prop['orig_height'] = $video->getProperties()['height'];
 
-        $option_1 = new ilRadioOption($this->plugin->txt('static'), 'static');
         $option_2 = new ilRadioOption($this->plugin->txt('responsive'), 'responsive');
+        $option_1 = new ilRadioOption($this->plugin->txt('static'), 'static');
 
         // slider
         $slider = new ilNonEditableValueGUI('', '', true);
@@ -468,24 +468,17 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $thumbnail->setValue('<img width="' . $prop['width'] . 'px" height="' . $prop['height'] . 'px" id="vpco_thumbnail" src="' . $video->getThumbnail() . '">');
         $option_1->addSubItem($thumbnail);
 
+        $item_group->addOption($option_2);
         $item_group->addOption($option_1);
 
         $form->addItem($item_group);
 
-        // width height
-        $width_height = new ilWidthHeightInputGUI($lng->txt("cont_width") .
-            " / " . $lng->txt("cont_height"), "size");
-        $width_height->setConstrainProportions(true);
-        $width_height->setRequired(true);
-        $width_height->setValueByArray(['size' => array_merge($prop, ['constr_prop' => true])]);
         $width = (int) $prop['width'];
         $height = (int) $prop['height'];
-        $ratio = $this->plugin->getAspectRatio($width, $height);
-        $width_height->setInfo($ratio);
+        $hidden = new ilHiddenInputGUI('size');
+        $hidden->setValue(json_encode(['width' => $width, 'height' => $height], JSON_THROW_ON_ERROR));
+        $form->addItem($hidden);
 
-        $form->addItem($width_height);
-
-        $item_group->addOption($option_2);
         $item_group->setValue($prop['type']);
 
         $form->addCommandButton("update", $lng->txt("save"));
@@ -526,6 +519,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
             $properties = $this->getProperties();
             $type = $form->getInput('type');
             $size = $form->getInput('size');
+            $size = json_decode($size, true, 512, JSON_THROW_ON_ERROR);
             $properties['width'] = $size['width'];
             $properties['height'] = $size['height'];
             $width = (int) $size['width'];
