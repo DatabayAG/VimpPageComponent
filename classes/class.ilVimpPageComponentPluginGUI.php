@@ -570,8 +570,12 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
                 xvmpConf::getConfig(xvmpConf::F_EMBED_PLAYER) || xvmpMedium::isVimeoOrYoutube($video));
             $video_player->setOption('height', $a_properties['height'] . 'px');
             $video_player->setOption('width', $a_properties['width'] . 'px');
-            $video_player->setOption('ratio', $a_properties['ratio']);
-            $video_player->setOption('type', $a_properties['type']);
+            if(isset($a_properties['ratio'])) {
+                $video_player->setOption('ratio', $a_properties['ratio']);
+            }
+            if(isset($a_properties['type'])) {
+                $video_player->setOption('type', $a_properties['type']);
+            }
             return $video_player->getHTML();
         } catch (xvmpException $e) {
             $img = './Customizing/global/plugins/Services/Repository/RepositoryObject/ViMP/templates/images/not_available.png';
