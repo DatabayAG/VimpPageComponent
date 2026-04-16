@@ -445,13 +445,15 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $form = new ilPropertyFormGUI();
         $item_group = new ilRadioGroupInputGUI($this->plugin->txt('type'), 'type');
         $prop = $this->getProperties();
-        $prop['width'] = round((int) $prop['width']);
-        $prop['height'] = round((int) $prop['height']);
+        $width = round((int) $prop['width']);
+        $height = round((int) $prop['height']);
         $prop['ratio'] = $prop['ratio'] ?? '16:9';
         $prop['type'] = $prop['type'] ?? 'responsive';
         $video = xvmpMedium::find($prop['mid']);
-        $prop['orig_width'] = $video->getProperties()['width'];
-        $prop['orig_height'] = $video->getProperties()['height'];
+        if($prop['width'] > 740) {
+            $width = 740;
+            $height = round($width / ($prop['width'] / $prop['height']));;
+        }
 
         $option_2 = new ilRadioOption($this->plugin->txt('responsive'), 'responsive');
         $option_1 = new ilRadioOption($this->plugin->txt('static'), 'static');
@@ -465,7 +467,7 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
 
         // thumbnail
         $thumbnail = new ilNonEditableValueGUI($lng->txt('preview'), '', true);
-        $thumbnail->setValue('<img width="' . $prop['width'] . 'px" height="' . $prop['height'] . 'px" id="vpco_thumbnail" src="' . $video->getThumbnail() . '">');
+        $thumbnail->setValue('<img width="' . $width . 'px" height="' . $height . 'px" id="vpco_thumbnail" src="' . $video->getThumbnail() . '">');
         $option_1->addSubItem($thumbnail);
 
         $item_group->addOption($option_2);
