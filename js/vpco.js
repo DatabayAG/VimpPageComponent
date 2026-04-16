@@ -18,13 +18,15 @@ VimpPageComponent = {
       .change(function () {
         let new_width = $(this)
           .val();
+        let new_height = $('#vpco_thumbnail')
+          .height();
         if (VimpPageComponent.keepAspectRatio()) {
           let current_width = $('#vpco_thumbnail')
             .width();
           let current_height = $('#vpco_thumbnail')
             .height();
           let ratio = (current_width / current_height);
-          let new_height = Math.round(new_width / ratio);
+          new_height = Math.round(new_width / ratio);
           $('#vpco_thumbnail')
             .height(new_height);
           $('input#prop_size_height')
@@ -33,19 +35,22 @@ VimpPageComponent = {
         $('#vpco_thumbnail')
           .width(new_width);
         VimpPageComponent.updateSlider();
+        VimpPageComponent.updateRatio(new_width, new_height);
       });
 
     $('input#prop_size_height')
       .change(function () {
         let new_height = $(this)
           .val();
+        let new_width = $('#vpco_thumbnail')
+          .width();
         if (VimpPageComponent.keepAspectRatio()) {
           let current_width = $('#vpco_thumbnail')
             .width();
           let current_height = $('#vpco_thumbnail')
             .height();
           let ratio = (current_width / current_height);
-          let new_width = Math.round(new_height * ratio);
+          new_width = Math.round(new_height * ratio);
           $('#vpco_thumbnail')
             .width(new_width);
           $('input#prop_size_width')
@@ -54,7 +59,13 @@ VimpPageComponent = {
         }
         $('#vpco_thumbnail')
           .height(new_height);
+        VimpPageComponent.updateRatio(new_width, new_height);
       });
+  },
+
+  updateRatio: function (width, height) {
+    $('#desc_size')
+      .html(VimpPageComponent.getAspectRatio(width, height));
   },
 
   updateSlider: function () {
@@ -83,6 +94,17 @@ VimpPageComponent = {
       .height(new_height);
     $('input#prop_size_height')
       .val(new_height);
+    VimpPageComponent.updateRatio(new_width, new_height);
+  },
+
+  getAspectRatio: function (width, height) {
+    let greatestCommonDivisor = function (width, height) {
+      return (width % height) ? greatestCommonDivisor(height, width % height) : height;
+    };
+
+    let divisor = greatestCommonDivisor(width, height);
+
+    return width / divisor + '/' + height / divisor;
   },
 
   keepAspectRatio: function () {

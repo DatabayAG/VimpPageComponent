@@ -450,6 +450,8 @@ class ilVimpPageComponentPluginGUI extends ilPageComponentPluginGUI
         $prop['ratio'] = $prop['ratio'] ?? '16:9';
         $prop['type'] = $prop['type'] ?? 'static';
         $video = xvmpMedium::find($prop['mid']);
+        $prop['orig_width'] = $video->getProperties()['width'];
+        $prop['orig_height'] = $video->getProperties()['height'];
 
         $option_1 = new ilRadioOption($this->plugin->txt('static'), 'static');
         $option_2 = new ilRadioOption($this->plugin->txt('responsive'), 'responsive');
