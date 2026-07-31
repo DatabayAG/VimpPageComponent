@@ -20,8 +20,7 @@
   },
   "autoload": {
     "classmap": [
-      "./classes/",
-      "./src/"
+      "./classes/"
     ],
     "files": [
       "../../../Repository/RepositoryObject/ViMP/vendor/autoload.php"
