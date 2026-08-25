@@ -4,9 +4,9 @@
 
 class ComposerAutoloaderInite383454822bc00af63c25add29632241
 {
-    private static ?\Composer\Autoload\ClassLoader $loader = null;
+    private static $loader;
 
-    public static function loadClassLoader($class): void
+    public static function loadClassLoader($class)
     {
         if ('Composer\Autoload\ClassLoader' === $class) {
             require __DIR__ . '/ClassLoader.php';
@@ -18,7 +18,7 @@ class ComposerAutoloaderInite383454822bc00af63c25add29632241
      */
     public static function getLoader()
     {
-        if (self::$loader instanceof \Composer\Autoload\ClassLoader) {
+        if (null !== self::$loader) {
             return self::$loader;
         }
 
@@ -34,25 +34,18 @@ class ComposerAutoloaderInite383454822bc00af63c25add29632241
         $loader->setClassMapAuthoritative(true);
         $loader->register(true);
 
-        $includeFiles = \Composer\Autoload\ComposerStaticInite383454822bc00af63c25add29632241::$files;
-        foreach ($includeFiles as $fileIdentifier => $file) {
-            composerRequiree383454822bc00af63c25add29632241($fileIdentifier, $file);
+        $filesToLoad = \Composer\Autoload\ComposerStaticInite383454822bc00af63c25add29632241::$files;
+        $requireFile = \Closure::bind(static function ($fileIdentifier, $file) {
+            if (empty($GLOBALS['__composer_autoload_files'][$fileIdentifier])) {
+                $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
+
+                require $file;
+            }
+        }, null, null);
+        foreach ($filesToLoad as $fileIdentifier => $file) {
+            $requireFile($fileIdentifier, $file);
         }
 
         return $loader;
-    }
-}
-
-/**
- * @param string $fileIdentifier
- * @param string $file
- * @return void
- */
-function composerRequiree383454822bc00af63c25add29632241($fileIdentifier, $file): void
-{
-    if (empty($GLOBALS['__composer_autoload_files'][$fileIdentifier])) {
-        $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
-
-        require $file;
     }
 }
