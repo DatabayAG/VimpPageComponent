@@ -42,3 +42,29 @@ foreach ($defaults as $name => $value) {
     }
 }
 ?>
+<#2>
+<?php
+
+/**
+ * @var $ilDB ilDBInterface
+ */
+
+$defaults = [
+    'default_width' => '640',
+    'default_height' => '360',
+];
+
+foreach ($defaults as $name => $value) {
+    $res = $ilDB->queryF(
+        'SELECT name FROM copg_pgcp_vpco_config WHERE name = %s',
+        ['text'],
+        [$name]
+    );
+    if ($res->numRows() === 0) {
+        $ilDB->insert('copg_pgcp_vpco_config', [
+            'name' => ['text', $name],
+            'value' => ['text', $value],
+        ]);
+    }
+}
+?>

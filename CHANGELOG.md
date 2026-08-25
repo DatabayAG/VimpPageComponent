@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.1]
+
+- Fix: installation aborted with "Unknown column 'setting'" and left the plugin configuration without default values
+
+## [1.10.0]
+
+- ILIAS 10 support
+
 ## [1.9.0]
 
 - ILIAS 9 support
