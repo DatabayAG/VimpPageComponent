@@ -49,9 +49,6 @@ foreach ($defaults as $name => $value) {
  * @var $ilDB ilDB
  */
 
-// Earlier releases inserted the defaults into a non-existing column, which
-// aborted step 1. On the next run the table already existed, so the defaults
-// were skipped and the table stayed empty.
 $defaults = [
     'default_width' => '640',
     'default_height' => '360',
