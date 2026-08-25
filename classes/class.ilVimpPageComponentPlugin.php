@@ -57,10 +57,10 @@ class ilVimpPageComponentPlugin extends ilPageComponentPlugin
         global $DIC;
         $db = $DIC->database();
 
-        $db->manipulate(
-            "UPDATE " . ilVimpPageComponentPlugin::TABLE_NAME . " SET " .
-            " value = " . $db->quote($value, $type) .
-            " WHERE name = " . $db->quote($setting, "text")
+        $db->replace(
+            ilVimpPageComponentPlugin::TABLE_NAME,
+            ['name' => ['text', $setting]],
+            ['value' => [$type, $value]]
         );
     }
 

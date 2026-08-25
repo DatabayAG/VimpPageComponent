@@ -13,4 +13,15 @@ mkdir -p Customizing/global/plugins/Services/COPage/PageComponent/
 cd Customizing/global/plugins/Services/COPage/PageComponent
 git clone https://github.com/DatabayAG/VimpPageComponent
 ```
-As ILIAS administrator go to "Administration->Plugins" and install/activate the plugin.
+
+Rebuild the plugin artifact so Setup and the administration GUI know the plugin, then install it:
+
+```bash
+cd [ILIAS-9-Docroot]
+php setup/setup.php build-artifacts
+php setup/setup.php install --plugin VimpPageComponent --yes
+```
+
+`php setup/setup.php build-artifacts` is required after cloning and after changes to `plugin.php`. Without it, Setup still uses the previous plugin data.
+
+Alternatively, as ILIAS administrator go to "Administration -> Plugins" and install/activate the plugin (after `php setup/setup.php build-artifacts`).

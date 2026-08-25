@@ -21,15 +21,53 @@ $fields = [
 if (!$ilDB->tableExists('copg_pgcp_vpco_config')) {
     $ilDB->createTable('copg_pgcp_vpco_config', $fields);
     $ilDB->addPrimaryKey('copg_pgcp_vpco_config', ['name']);
+}
 
-    $ilDB->insert('copg_pgcp_vpco_config', [
-        'setting' => ['text', 'default_width'],
-        'value' => 640
-    ]);
+$defaults = [
+    'default_width' => '640',
+    'default_height' => '360',
+];
 
-    $ilDB->insert('copg_pgcp_vpco_config', [
-        'setting' => ['text', 'default_height'],
-        'value' => 360
-    ]);
+foreach ($defaults as $name => $value) {
+    $res = $ilDB->queryF(
+        'SELECT name FROM copg_pgcp_vpco_config WHERE name = %s',
+        ['text'],
+        [$name]
+    );
+    if ($res->numRows() === 0) {
+        $ilDB->insert('copg_pgcp_vpco_config', [
+            'name' => ['text', $name],
+            'value' => ['text', $value],
+        ]);
+    }
+}
+?>
+<#2>
+<?php
+
+/**
+ * @var $ilDB ilDB
+ */
+
+// Earlier releases inserted the defaults into a non-existing column, which
+// aborted step 1. On the next run the table already existed, so the defaults
+// were skipped and the table stayed empty.
+$defaults = [
+    'default_width' => '640',
+    'default_height' => '360',
+];
+
+foreach ($defaults as $name => $value) {
+    $res = $ilDB->queryF(
+        'SELECT name FROM copg_pgcp_vpco_config WHERE name = %s',
+        ['text'],
+        [$name]
+    );
+    if ($res->numRows() === 0) {
+        $ilDB->insert('copg_pgcp_vpco_config', [
+            'name' => ['text', $name],
+            'value' => ['text', $value],
+        ]);
+    }
 }
 ?>
